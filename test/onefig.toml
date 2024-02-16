@@ -1,0 +1,39 @@
+[onefig]
+package_manager = "bun"
+
+[package]
+name = "onefig"
+description = "One file package config."
+author = "Tomasz Marciniak <tomek@palladians.xyz>"
+
+[package.scripts]
+build = "bun build src/index.ts"
+# Actual commenting on scripts without tricks
+cli = "bun run src/index.ts"
+
+[package.dependencies]
+js-toml = "^1.0.0"
+
+[package.devDependencies]
+typescript = "^5.0.0"
+"@tsconfig/bun" = "^1.0.3"
+
+[prettier]
+semi = false
+trailingComma = "none"
+singleQuote = true
+printWidth = 80
+tabWidth = 2
+
+[eslint]
+extends = [
+    "plugin:prettier/recommended",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+]
+parser = "@typescript-eslint/parser"
+plugins = ["@typescript-eslint", "simple-import-sort", "import"]
+root = true
+
+[tsconfig]
+extends = "@tsconfig/bun"
