@@ -20,10 +20,10 @@ typescript = "^5.0.0"
 
 [prettier]
 semi = false
-trailingComma = "none"
-singleQuote = true
-printWidth = 80
-tabWidth = 2
+trailing_comma = "none"
+single_quote = true
+print_width = 80
+tab_width = 2
 
 [eslint]
 extends = [

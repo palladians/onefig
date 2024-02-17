@@ -1,6 +1,6 @@
-import { findUp, pathExists, type Match } from "find-up";
-import { load } from "js-toml";
 import path from "path";
+import { getConfig } from "./config";
+import camelcaseKeys from "camelcase-keys";
 
 const generateJsonConfig = ({
   filename,
@@ -11,27 +11,26 @@ const generateJsonConfig = ({
   config: object;
   dir: string;
 }) => {
+  const stopPaths =
+    filename === "package.json"
+      ? ["dependencies", "devDependencies", "peerDependencies"]
+      : [];
   // TODO: Add editorconfig fallback
   const tabWidth = config?.prettier?.tabWidth ?? 2;
-  const configFileContent = JSON.stringify(config, undefined, tabWidth);
+  const camelCasedConfig = camelcaseKeys(config as Record<string, unknown>, {
+    deep: true,
+    stopPaths,
+  });
+  const configFileContent = JSON.stringify(
+    camelCasedConfig,
+    undefined,
+    tabWidth,
+  );
   return Bun.write(path.join(dir, filename), configFileContent);
 };
 
 export const gen = async () => {
-  const configDir = await findUp(
-    async (directory) => {
-      const hasUnicorns = await pathExists(path.join(directory, "onefig.toml"));
-      return (hasUnicorns && directory) as Match;
-    },
-    { type: "directory" },
-  );
-  if (!configDir) {
-    console.error("No onefig.toml configuration file found.");
-    return process.exit(1);
-  }
-  const parsedConfig = load(
-    await Bun.file(path.join(configDir, "onefig.toml")).text(),
-  );
+  const { parsedConfig, configDir } = await getConfig();
   if (parsedConfig.package) {
     await generateJsonConfig({
       filename: "package.json",
